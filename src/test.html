@@ -1,0 +1,52 @@
+<html>
+<head>
+
+<script>
+
+
+// Controller code
+$('.js-app-controller').on('FIGURE_VIEWER_OPEN', openFV );
+$('.js-app-controller').on('START_APPLICATION_EVENT', startApp );
+$('.js-app-controller').on('LOGGING_EVENT', logging  );
+
+function openFV( evt )
+{
+
+}
+
+
+
+// other event handlers
+$('#fvButton').on('click', function(){
+    $('.js-app-controller').trigger('FIGURE_VIEWER_OPEN');
+});
+
+$('#fvButton2').on('click', function(){
+    $('.js-app-controller').trigger('FIGURE_VIEWER_OPEN');
+});
+
+
+</script>
+
+
+</head>
+<body>
+hello
+
+<div class="js-app-controller"></div>
+
+
+
+<button id="fvButton">open FV<button>
+
+
+
+
+
+
+
+<button id="fvButton2">open FV<button>
+
+
+</body>
+</html>
