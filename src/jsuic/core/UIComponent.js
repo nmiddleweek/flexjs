@@ -1,1 +1,1 @@
-// jsuic.com.UIComponent.js
+// jsuic.core.UIComponent.js
