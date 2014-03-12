@@ -1,3 +1,13 @@
+/*
+Caveats:
+--------
+
+Constructor funtions must not be anonymous.
+Methods must not be anonymous.
+
+
+*/
+
 if(!window.console){
     window.console = {
         'log' : function(msg){
@@ -15,7 +25,7 @@ var JSObject = function JSObject(){ // constructor
 
 }
 JSObject.prototype.trace = function trace(text){
-  //console.log('JSObject.trace()', text);
+  console.log('JSObject.trace()', text);
 }
 JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
   var str = this.constructor.name,
@@ -46,13 +56,19 @@ JSObject.prototype.SUPER = (function SUPER(){
         getArguments = function(){
             return args;
         },
+        getSuper = function(){
+            if(this.__prototypeChain === undefined){
+                this.__prototypeChain = this.getPrototypeChain().split('.');
+            }
+
+            return this.__prototypeChain.shift();
+        },
+        superClassName = getSuper.call(this),
         statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments());';
 
-        function getSuper(){
-            console.log( this.getPrototypeChain() );
+        if(superClassName === undefined){
+            return;
         }
-
-        getSuper.call(this);
 
         console.log('1a: ' + superClass);
         console.log('1b: ' + this.constructor);
@@ -86,7 +102,7 @@ EventDispatcher.prototype.dispatch = function dispatch(){
 
 EventDispatcher.prototype.trace = function trace(text){
   console.log('EventDispatcher.trace()', text);
-  //this.SUPER(text);
+  this.SUPER(text);
 }
 
 
@@ -109,8 +125,8 @@ UIComponent.prototype.trace = function trace(text){
 
 //JSObject();
 
-//var jsObject = new JSObject();
-//jsObject.trace();
+var obj = new UIComponent();
+obj.trace('hi');
 
 var uiComp = new UIComponent();
 uiComp.trace('hello');
