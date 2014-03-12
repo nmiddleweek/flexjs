@@ -17,19 +17,42 @@ var JSObject = function JSObject(){ // constructor
 JSObject.prototype.trace = function trace(text){
   //console.log('JSObject.trace()', text);
 }
+JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
+  var str = this.constructor.name,
+  __super = this.constructor.prototype,
+  counter = 0;
+
+  while(__super !== __super.constructor.prototype){
+      // Keep looping the prototype chain until you've hit the Base Prototype.
+      counter++;
+      console.log(counter, __super.constructor.name);
+      str += '.' + __super.constructor.name;
+
+      __super = __super.constructor.prototype;
+      }
+
+      return str;
+
+}
 JSObject.prototype.SUPER = (function SUPER(){
 
     console.log('parse SUPER');
     var ret = function SUPER(){
         var self = this,
         args = arguments,
-        callingFunctionName = arguments.callee.caller.name,
+        callingFunctionName = arguments.callee.caller.name, // What JS optimzations does this prevent? Is it an issue here?
         superClass = this.constructor.prototype,
         superClassName = superClass.constructor.name,
         getArguments = function(){
             return args;
         },
         statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments());';
+
+        function getSuper(){
+            console.log( this.getPrototypeChain() );
+        }
+
+        getSuper.call(this);
 
         console.log('1a: ' + superClass);
         console.log('1b: ' + this.constructor);
@@ -40,7 +63,7 @@ JSObject.prototype.SUPER = (function SUPER(){
         console.log('3b: ' + this.constructor.prototype.constructor.prototype.constructor.prototype.constructor);
         console.log('3c: ' + statement);
         if(superClass.hasOwnProperty( callingFunctionName )){
-            eval(statement);
+            eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
         }
     },
     counter = 100,
