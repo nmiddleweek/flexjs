@@ -35,7 +35,7 @@ JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
   while(__super !== __super.constructor.prototype){
       // Keep looping the prototype chain until you've hit the Base Prototype.
       counter++;
-      console.log(counter, __super.constructor.name);
+      //console.log(counter, __super.constructor.name);
       str += '.' + __super.constructor.name;
 
       __super = __super.constructor.prototype;
@@ -59,25 +59,26 @@ JSObject.prototype.SUPER = (function SUPER(){
         getSuper = function(){
             if(this.__prototypeChain === undefined){
                 this.__prototypeChain = this.getPrototypeChain().split('.');
+                this.__prototypeChain.shift(); // Remove the Current Prototype so it doesn't call itself again.
             }
 
             return this.__prototypeChain.shift();
         },
         superClassName = getSuper.call(this),
-        statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments());';
+        statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments.call(self));';
 
         if(superClassName === undefined){
             return;
         }
 
-        console.log('1a: ' + superClass);
-        console.log('1b: ' + this.constructor);
-        this.constructor.prototype.dispatch()
-        console.log('2a: ' + this.constructor.prototype.constructor);
-        console.log('2b: ' + this.constructor.prototype.dispatch);
-        console.log('3a: ' + this.constructor.prototype.constructor.prototype.constructor);
-        console.log('3b: ' + this.constructor.prototype.constructor.prototype.constructor.prototype.constructor);
-        console.log('3c: ' + statement);
+        //console.log('1a: ' + superClass);
+        //console.log('1b: ' + this.constructor);
+        //this.constructor.prototype.dispatch()
+        //console.log('2a: ' + this.constructor.prototype.constructor);
+        //console.log('2b: ' + this.constructor.prototype.dispatch);
+        //console.log('3a: ' + this.constructor.prototype.constructor.prototype.constructor);
+        //console.log('3b: ' + this.constructor.prototype.constructor.prototype.constructor.prototype.constructor);
+        //console.log('3c: ' + statement);
         if(superClass.hasOwnProperty( callingFunctionName )){
             eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
         }
