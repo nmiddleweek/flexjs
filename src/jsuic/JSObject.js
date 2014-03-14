@@ -4,14 +4,26 @@ Caveats:
 
 Constructor funtions must not be anonymous.
 Methods must not be anonymous.
+Can't call this.SUPER() from a constructor function
 
+TODO:
+-----
+ 
 
 */
 
 if(!window.console){
     window.console = {
         'log' : function(msg){
-            document.writeln(msg + '<hr/>')
+            var args = arguments;
+            var getArgs = function(){
+                var str = '';
+                for(var i=0; i < args.length; i++){
+                    str = str + args[i] + ' ';
+                }
+                return str.substr(0, str.length-1);
+            };
+            document.writeln(getArgs() + '<hr/>')
         }
     };
 }
@@ -28,16 +40,12 @@ JSObject.prototype.trace = function trace(text){
   console.log('JSObject.trace()', text);
 }
 JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
-  var str = this.constructor.name,
-  __super = this.constructor.prototype,
-  counter = 0;
+  var str = this.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,''),
+  __super = this.constructor.prototype
+  ;
 
   while(__super !== __super.constructor.prototype){
-      // Keep looping the prototype chain until you've hit the Base Prototype.
-      counter++;
-      //console.log(counter, __super.constructor.name);
-      str += '.' + __super.constructor.name;
-
+      str += '.' + __super.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,'');
       __super = __super.constructor.prototype;
       }
 
@@ -50,9 +58,9 @@ JSObject.prototype.SUPER = (function SUPER(){
     var ret = function SUPER(){
         var self = this,
         args = arguments,
-        callingFunctionName = arguments.callee.caller.name, // What JS optimzations does this prevent? Is it an issue here?
+        callingFunctionName = arguments.callee.caller.toString().match(/function\W*\w*/)[0].replace(/function\W*/,''), // What JS optimzations does this prevent? Is it an issue here?
         superClass = this.constructor.prototype,
-        superClassName = superClass.constructor.name,
+        superClassName = superClass.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,''),
         getArguments = function(){
             return args;
         },
