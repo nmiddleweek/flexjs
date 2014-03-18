@@ -8,7 +8,7 @@ Can't call this.SUPER() from a constructor function
 
 TODO:
 -----
- 
+
 
 */
 
@@ -65,8 +65,9 @@ JSObject.prototype.SUPER = (function SUPER(){
             return args;
         },
         getSuper = function(){
-            if(this.__prototypeChain === undefined){
-                this.__prototypeChain = this.getPrototypeChain().split('.');
+            //console.log('counter: ', counter++);
+            if( (this.__prototypeChain === undefined) || (this.__prototypeChain.length === 0) ) {
+                this.__prototypeChain = (this.__prototypeChainCache !== undefined) ? this.__prototypeChainCache.split('.') : ( this.__prototypeChainCache = this.getPrototypeChain() ).split('.');
                 this.__prototypeChain.shift(); // Remove the Current Prototype so it doesn't call itself again.
             }
 
@@ -76,6 +77,7 @@ JSObject.prototype.SUPER = (function SUPER(){
         statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments.call(self));';
 
         if(superClassName === undefined){
+            this.__prototypeChain = undefined;
             return;
         }
 
@@ -90,8 +92,12 @@ JSObject.prototype.SUPER = (function SUPER(){
         if(superClass.hasOwnProperty( callingFunctionName )){
             eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
         }
+        else{
+            this.__prototypeChain = undefined;
+        }
+        console.log('exit SUPER');
     },
-    counter = 100,
+    counter = 0,
     stack = 'hi';
 
     return ret;
@@ -136,6 +142,7 @@ UIComponent.prototype.trace = function trace(text){
 
 var obj = new UIComponent();
 obj.trace('hi');
+obj.trace('hi there');
 
 var uiComp = new UIComponent();
 uiComp.trace('hello');
