@@ -1,33 +1,13 @@
-/*
-Caveats:
---------
 
-Constructor functions must NOT be anonymous.
-Methods must NOT be anonymous.
-Can't call this.SUPER() from a constructor function
-
-TODO:
------
-
-
-*/
-
-if(!window.console){
-    window.console = {
-        'log' : function(msg){
-            var args = arguments;
-            var getArgs = function(){
-                var str = '';
-                for(var i=0; i < args.length; i++){
-                    str = str + args[i] + ' ';
-                }
-                return str.substr(0, str.length-1);
-            };
-            document.writeln(getArgs() + '<hr/>');
-        }
-    };
-}
-
+/**
+ * Creates a new JSObject.
+ * 
+ * Extending the native JavaScript 'Object' is bad practice so this is
+ * the core 'Object' used throughtout this custom framework.
+ * 
+ * @author Nick Middleweek <nick@middleweek.co.uk>
+ * @class
+ */
 var JSObject = function JSObject(){ // constructor
     this.constructor = JSObject;
     if(this === window){
@@ -40,8 +20,7 @@ JSObject.prototype.trace = function trace(text){
 };
 JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
   var str = this.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,''),
-  __super = this.constructor.prototype
-  ;
+  __super = this.constructor.prototype;
 
   while(__super !== __super.constructor.prototype){
       str += '.' + __super.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,'');
@@ -51,9 +30,27 @@ JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
       return str;
 
 };
+
+/**
+ * 
+ * @author Nick Middleweek <nick@middleweek.co.uk>
+ * 
+ * The SUPER method used to mimic the super keyword as found in ES6 and Java.
+ * 
+ * The caveats of be able to use this.SUPER() are:
+ * 1. Constructor functions must NOT be anonymous.
+ * 2. Methods must NOT be anonymous.
+ * 3. Can't call this.SUPER() from a constructor function.
+ * 
+*/
+
 JSObject.prototype.SUPER = (function SUPER(){
 
-    console.log('parse SUPER');
+/**
+ * The SUPER method implementation as a closure method
+ * to allow me to use some private error variables
+ * without sprinkling the global space unnecessarily.
+*/
     var ret = function SUPER(){
         var self = this,
         args = arguments,
@@ -79,15 +76,6 @@ JSObject.prototype.SUPER = (function SUPER(){
             this.__prototypeChain = undefined;
             return;
         }
-
-        //console.log('1a: ' + superClass);
-        //console.log('1b: ' + this.constructor);
-        //this.constructor.prototype.dispatch()
-        //console.log('2a: ' + this.constructor.prototype.constructor);
-        //console.log('2b: ' + this.constructor.prototype.dispatch);
-        //console.log('3a: ' + this.constructor.prototype.constructor.prototype.constructor);
-        //console.log('3b: ' + this.constructor.prototype.constructor.prototype.constructor.prototype.constructor);
-        //console.log('3c: ' + statement);
         
         eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
         if(error === true){
@@ -100,62 +88,4 @@ JSObject.prototype.SUPER = (function SUPER(){
     errorClassName = '';
 
     return ret;
-
 }());
-
-
-var EventDispatcher = function EventDispatcher(){ // constructor
-    JSObject.apply(this, arguments);
-    this.constructor = EventDispatcher;
-};
-EventDispatcher.prototype = new JSObject(); // Extends
-
-EventDispatcher.prototype.dispatch = function dispatch(){
-  console.log('dispatch');
-};
-
-EventDispatcher.prototype.trace = function trace(text){
-  console.log('EventDispatcher.trace()', text);
-  this.SUPER(text);
-};
-
-
-var UIComponent = function UIComponent(){ // constructor
-    EventDispatcher.apply(this, arguments);
-    this.constructor = UIComponent;
-};
-UIComponent.prototype = new EventDispatcher(); // Extends
-
-UIComponent.prototype.renderer = function renderer(){
-  console.log('renderer');
-};
-
-UIComponent.prototype.trace = function trace(text){
-  console.log('UIComponent.trace()', text);
-  //this.SUPER().trace(text);
-  this.SUPER(text);
-};
-
-
-var ImageViewer = function ImageViewer(){ // constructor
-    UIComponent.apply(this, arguments);
-    this.constructor = ImageViewer;
-};
-ImageViewer.prototype = new UIComponent(); // Extends
-
-ImageViewer.prototype.zoom = function zoom(){
-  console.log('zoom');
-};
-
-ImageViewer.prototype.trace = function trace(text){
-  console.log('ImageViewer.trace()', text);
-  //this.SUPER().trace(text);
-  this.SUPER(text);
-};
-
-
-//JSObject();
-
-
-var obj = new ImageViewer();
-obj.trace('hi');
