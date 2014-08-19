@@ -36,7 +36,7 @@ var JSObject = function JSObject(){ // constructor
 
 };
 JSObject.prototype.trace = function trace(text){
-  console.log2('JSObject.trace()', text);
+  console.log('JSObject.trace()', text);
 };
 JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
   var str = this.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,''),
@@ -72,8 +72,8 @@ JSObject.prototype.SUPER = (function SUPER(){
 
             return this.__prototypeChain.shift();
         },
-        superClassName = getSuper.call(this),
-        statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments.call(self))';
+        superClassName = errorClassName = getSuper.call(this),
+        statement = '(' + superClassName + '.prototype.hasOwnProperty(\'' + callingFunctionName + '\') ) ? ' + superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments.call(self)) : error=true;';
 
         if(superClassName === undefined){
             this.__prototypeChain = undefined;
@@ -88,22 +88,16 @@ JSObject.prototype.SUPER = (function SUPER(){
         //console.log('3a: ' + this.constructor.prototype.constructor.prototype.constructor);
         //console.log('3b: ' + this.constructor.prototype.constructor.prototype.constructor.prototype.constructor);
         //console.log('3c: ' + statement);
-        if(superClass.hasOwnProperty( callingFunctionName )){
-            try{
-                eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
-            }
-            catch(evt){
-                throw new Error('Ooops!... The SUPER method \''+ callingFunctionName +'\' does not exist in \'' + superClassName + '\'.');
-                this.__prototypeChain = undefined;
-            }
-        }
-        else{
+        
+        eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
+        if(error === true){
             this.__prototypeChain = undefined;
+            throw new Error('Invalid call to this.SUPER(). '+ errorClassName + '.' + callingFunctionName +' does not exist.');
         }
         console.log('exit SUPER');
     },
-    counter = 0,
-    stack = 'hi';
+    error = false,
+    errorClassName = '';
 
     return ret;
 
@@ -165,5 +159,3 @@ ImageViewer.prototype.trace = function trace(text){
 
 var obj = new ImageViewer();
 obj.trace('hi');
-obj.trace('hi there');
-
