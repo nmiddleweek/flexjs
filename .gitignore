@@ -1,0 +1,11 @@
+# Cloud9 IDE - http://c9.io
+.c9revisions
+.c9
+
+# Sass Cache - http://sass-lang.com/documentation/file.SASS_REFERENCE.html#caching
+.sass-cache**/.sass-cache
+**/.sass-cache/*
+
+# IntelliJ Module Library
+
+*.iml
