@@ -2,8 +2,8 @@
 Caveats:
 --------
 
-Constructor funtions must not be anonymous.
-Methods must not be anonymous.
+Constructor functions must NOT be anonymous.
+Methods must NOT be anonymous.
 Can't call this.SUPER() from a constructor function
 
 TODO:
@@ -23,7 +23,7 @@ if(!window.console){
                 }
                 return str.substr(0, str.length-1);
             };
-            document.writeln(getArgs() + '<hr/>')
+            document.writeln(getArgs() + '<hr/>');
         }
     };
 }
@@ -31,14 +31,13 @@ if(!window.console){
 var JSObject = function JSObject(){ // constructor
     this.constructor = JSObject;
     if(this === window){
-        throw new Error('Constructor Function Error','This is a constructor function, you need to use the new keyword.')
-        return;
+        throw new Error('Constructor Function Error','This is a constructor function, you need to use the new keyword.');
     }
 
-}
+};
 JSObject.prototype.trace = function trace(text){
-  console.log('JSObject.trace()', text);
-}
+  console.log2('JSObject.trace()', text);
+};
 JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
   var str = this.constructor.toString().match(/function\W*\w*/)[0].replace(/function\W*/,''),
   __super = this.constructor.prototype
@@ -51,7 +50,7 @@ JSObject.prototype.getPrototypeChain = function getPrototypeChain(){
 
       return str;
 
-}
+};
 JSObject.prototype.SUPER = (function SUPER(){
 
     console.log('parse SUPER');
@@ -74,7 +73,7 @@ JSObject.prototype.SUPER = (function SUPER(){
             return this.__prototypeChain.shift();
         },
         superClassName = getSuper.call(this),
-        statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments.call(self));';
+        statement = superClassName + '.prototype.' + callingFunctionName + '.apply(self, getArguments.call(self))';
 
         if(superClassName === undefined){
             this.__prototypeChain = undefined;
@@ -90,7 +89,13 @@ JSObject.prototype.SUPER = (function SUPER(){
         //console.log('3b: ' + this.constructor.prototype.constructor.prototype.constructor.prototype.constructor);
         //console.log('3c: ' + statement);
         if(superClass.hasOwnProperty( callingFunctionName )){
-            eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
+            try{
+                eval(statement); // What are the negatives of eval, does it exist in Angular or Backbone ?
+            }
+            catch(evt){
+                throw new Error('Ooops!... The SUPER method \''+ callingFunctionName +'\' does not exist in \'' + superClassName + '\'.');
+                this.__prototypeChain = undefined;
+            }
         }
         else{
             this.__prototypeChain = undefined;
@@ -108,75 +113,57 @@ JSObject.prototype.SUPER = (function SUPER(){
 var EventDispatcher = function EventDispatcher(){ // constructor
     JSObject.apply(this, arguments);
     this.constructor = EventDispatcher;
-}
+};
 EventDispatcher.prototype = new JSObject(); // Extends
 
 EventDispatcher.prototype.dispatch = function dispatch(){
   console.log('dispatch');
-}
+};
 
 EventDispatcher.prototype.trace = function trace(text){
   console.log('EventDispatcher.trace()', text);
   this.SUPER(text);
-}
+};
 
 
 var UIComponent = function UIComponent(){ // constructor
     EventDispatcher.apply(this, arguments);
     this.constructor = UIComponent;
-}
+};
 UIComponent.prototype = new EventDispatcher(); // Extends
 
 UIComponent.prototype.renderer = function renderer(){
   console.log('renderer');
-}
+};
 
 UIComponent.prototype.trace = function trace(text){
   console.log('UIComponent.trace()', text);
   //this.SUPER().trace(text);
   this.SUPER(text);
-}
+};
+
+
+var ImageViewer = function ImageViewer(){ // constructor
+    UIComponent.apply(this, arguments);
+    this.constructor = ImageViewer;
+};
+ImageViewer.prototype = new UIComponent(); // Extends
+
+ImageViewer.prototype.zoom = function zoom(){
+  console.log('zoom');
+};
+
+ImageViewer.prototype.trace = function trace(text){
+  console.log('ImageViewer.trace()', text);
+  //this.SUPER().trace(text);
+  this.SUPER(text);
+};
 
 
 //JSObject();
 
-var obj = new UIComponent();
+
+var obj = new ImageViewer();
 obj.trace('hi');
 obj.trace('hi there');
 
-var uiComp = new UIComponent();
-uiComp.trace('hello');
-
-
-if(false)
-{
-(function test(){
-
-    var fn = arguments.callee;
-    console.log('1: ' + fn.prototype);
-
-    var arrGuments = Array.prototype.slice.apply(arguments);
-    console.log('args.len: ' + arrGuments.length);
-
-    if(arguments.callee.caller === null) {
-      arguments.callee.apply(window, ['hi', 'bye']);
-
-    }
-    else {
-      console.log('"' + arguments.callee.caller.toString().match(/function\W*\w*/)[0].replace(/function\W*/,'') + '"');
-      console.log('"' + arguments.callee.caller.name + '"');
-
-      //    JSObject();
-
-      var jsObject = new JSObject();
-
-      //jsObject.trace();
-      var uiComp = new UIComponent();
-      uiComp.trace('hello');
-
-    }
-
-
-  }());
-
-}
