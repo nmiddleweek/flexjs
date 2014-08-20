@@ -61,7 +61,6 @@ JSObject.prototype.SUPER = (function SUPER(){
             return args;
         },
         getSuper = function(){
-            //console.log('counter: ', counter++);
             if( (this.__prototypeChain === undefined) || (this.__prototypeChain.length === 0) ) {
                 this.__prototypeChain = (this.__prototypeChainCache !== undefined) ? this.__prototypeChainCache.split('.') : ( this.__prototypeChainCache = this.getPrototypeChain() ).split('.');
                 this.__prototypeChain.shift(); // Remove the Current Prototype so it doesn't call itself again.
