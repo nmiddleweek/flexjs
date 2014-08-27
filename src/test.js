@@ -1,4 +1,4 @@
-
+/*
 (function test(){
 
     var fn = arguments.callee;
@@ -12,7 +12,10 @@
 
     }
     else {
-      console.log('"' + arguments.callee.caller.toString().match(/function\W*\w*/)[0].replace(/function\W*/,'') + '"');
+    var regex1 = new Regex("function\W*\w*");
+    var regex2 = new Regex("function\W*");
+    
+      console.log('"' + arguments.callee.caller.toString().match(regex1)[0].replace(regex2,'') + '"');
       console.log('"' + arguments.callee.caller.name + '"');
 
       //    JSObject();
@@ -27,3 +30,4 @@
 
 
   }());
+  */

@@ -8,7 +8,7 @@ Note: JSObject exposes a closure protected method called SUPER. This is in affec
 
 ImageViewer < UIComponent < EventDispatcher < JSObject
 
-Each 'Class' exposes a .trace() method and you can see inside the application.js, we're creating an instance of the ImageViewer, then calling it's .trace() method passing 'h' as a parameter. The result is a chainable hierarchy of trace() calls up the prototypal inheritance chain.
+Each 'Class' exposes a .trace() method and you can see inside the application.js, we're creating an instance of the ImageViewer, then calling it's .trace() method passing 'hi' as a parameter. The result is a chainable hierarchy of trace() calls up the prototypal inheritance chain.
 
 Have a a little snoop around :-)
 
